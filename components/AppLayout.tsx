@@ -66,11 +66,13 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
             {navItems.map((item) => {
               const active = router.pathname === item.href;
               return (
-                <NavLink key={item.href} href={item.href} $active={active}>
-                  <NavIcon>{item.icon}</NavIcon>
-                  <span>{item.label}</span>
-                  {active && <ActiveIndicator />}
-                </NavLink>
+                <NextLink key={item.href} href={item.href} passHref>
+                  <NavLink $active={active}>
+                    <NavIcon>{item.icon}</NavIcon>
+                    <span>{item.label}</span>
+                    {active && <ActiveIndicator />}
+                  </NavLink>
+                </NextLink>
               );
             })}
           </Nav>
@@ -93,10 +95,12 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
               <PageTitle>{title}</PageTitle>
             </HeaderLeft>
             <HeaderRight>
-              <QuickAddLink href="/app/transactions?add=true">
-                <PlusIcon />
-                <span>İşlem Ekle</span>
-              </QuickAddLink>
+              <NextLink href="/app/transactions?add=true" passHref>
+                <QuickAddLink>
+                  <PlusIcon />
+                  <span>İşlem Ekle</span>
+                </QuickAddLink>
+              </NextLink>
             </HeaderRight>
           </Header>
 
@@ -254,7 +258,7 @@ const Nav = styled.div`
   gap: 0.4rem;
 `;
 
-const NavLink = styled(NextLink)<{ $active: boolean }>`
+const NavLink = styled.a<{ $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 1.2rem;
@@ -398,7 +402,7 @@ const HeaderRight = styled.div`
   gap: 1.2rem;
 `;
 
-const QuickAddLink = styled(NextLink)`
+const QuickAddLink = styled.a`
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
