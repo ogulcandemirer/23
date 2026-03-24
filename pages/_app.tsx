@@ -17,6 +17,7 @@ import NavigationDrawer from 'components/NavigationDrawer';
 import NewsletterModal from 'components/NewsletterModal';
 import WaveCta from 'components/WaveCta';
 import { NewsletterModalContextProvider, useNewsletterModalContext } from 'contexts/newsletter-modal.context';
+import { ExpenseTrackerProvider } from 'contexts/expense-tracker.context';
 import { NavItems } from 'types';
 
 const navItems: NavItems = [
@@ -28,22 +29,39 @@ const navItems: NavItems = [
 
 const TinaCMS = dynamic(() => import('tinacms'), { ssr: false });
 
+type ComponentWithLayout = {
+  getLayout?: (page: React.ReactNode) => React.ReactNode;
+};
+
 function MyApp({ Component, pageProps }: AppProps) {
+  const ComponentWithLayout = Component as React.ComponentType & ComponentWithLayout;
+  const getLayout = ComponentWithLayout.getLayout;
+
+  // App pages use their own layout (no marketing navbar/footer)
+  if (getLayout) {
+    return (
+      <>
+        <Head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+          <link rel="icon" type="image/png" href="/favicon.png" />
+        </Head>
+        <ColorModeScript />
+        <GlobalStyle />
+        <ExpenseTrackerProvider>
+          {getLayout(<Component {...pageProps} />)}
+        </ExpenseTrackerProvider>
+      </>
+    );
+  }
+
+  // Default marketing layout
   return (
     <>
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="icon" type="image/png" href="/favicon.png" />
-        {/* <link rel="alternate" type="application/rss+xml" href={EnvVars.URL + 'rss'} title="RSS 2.0" /> */}
-        {/* <script
-          dangerouslySetInnerHTML={{
-            __html: `window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-          ga('create', 'UA-117119829-1', 'auto');
-          ga('send', 'pageview');`,
-          }}
-        /> */}
-        {/* <script async src="https://www.google-analytics.com/analytics.js"></script> */}
       </Head>
       <ColorModeScript />
       <GlobalStyle />
